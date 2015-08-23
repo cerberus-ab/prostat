@@ -7,22 +7,23 @@
 + Возможность игнорирования файлов определенных типов (.git, .gitignore, .temp и прочее).
 + Объединение однотипных файлов в один набор (изображения, шрифты и прочее).
 + Подсчет количества строк кода в указанных файлах исходников.
++ Файл сбора статистики будучи в рабочем каталоге также будет учитываться.
 
 **Реализация**
 
 Интерфейс базового класса статистики _ProjectStat_:
-+ `__construct($dir)`
-+ `Destroy()`
-+ `getError()`
-+ `getStat()`
-+ `getOptions()`
-+ `addType($name, $extensions)`
-+ `removeType($name)`
-+ `addSource($extensions)`
-+ `removeSource($extensions)`
-+ `addIgnore($extensions)`
-+ `removeIgnore($extensions)`
-+ `static prepStat($stat)`
++ `__construct($dir)`: Конструктор класса с указанием рабочего каталога.
++ `Destroy()`: Деструктор класса не используется.
++ `getError()`: Получить текст последней ошибки.
++ `getStat()`: Получить сырую статистику как ассоциативный массив.
++ `getOptions()`: Получить настройки как ассоциативный массив.
++ `addType($name, $extensions)`: Добавить свой тип файлов как объединение указанных.
++ `removeType($name)`: Удалить созданный ранее свой тип файлов.
++ `addSource($extensions)`: Добавить типы файлов на отслеживание как исходники.
++ `removeSource($extensions)`: Удалить типы файлов из отслеживаемых как исходники.
++ `addIgnore($extensions)`: Добавить типы файлов на игнорирование.
++ `removeIgnore($extensions)`: Удалить типвы файлов из игнорирования.
++ `static prepStat($stat)`: Статический метод формирования полной статистики.
 
 Настройки класса по умолчанию:
 ```php
@@ -58,6 +59,19 @@ class ProjectStat_AMP extends ProjectStat {
     $this->addType('cpp', array('cpp', 'h'));
   }
 }
+```
+
+Пример использования класса:
+```php
+// инициализация объекта статистики
+$pro = new ProjectStat_AMP('./');
+if ($error = $pro->getError()) {
+    die($error);
+}
+// получить текущие настройки
+$options = $pro->getOptions();
+// получить статистику в текущем каталоге
+$stat = ProjectStat_AMP::prepStat($pro->getStat());
 ```
 
 Пример отображаемой статистики:
